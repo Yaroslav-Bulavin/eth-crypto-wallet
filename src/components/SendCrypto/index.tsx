@@ -1,22 +1,24 @@
-import React, {useContext, useMemo, useState} from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { ethers } from 'ethers';
-import {Box, Button, FormControl, FormLabel, Input, Text} from "@chakra-ui/react";
-import {Web3Context} from "../../context/web3.context";
-import {bscConfig, ethereumConfig} from "../../config";
+import {
+  Box, Button, FormControl, FormLabel, Input, Text,
+} from '@chakra-ui/react';
+import { Web3Context } from '../../context/web3.context';
+import { bscConfig, ethereumConfig } from '../../config';
 
-const SendCrypto = () => {
-  const {accounts, web3} = useContext(Web3Context)
+function SendCrypto() {
+  const { accounts, web3 } = useContext(Web3Context);
 
   const defaultCurrency = useMemo(() => {
     switch (web3?.bzz.currentProvider) {
       case ethereumConfig.rpcUrl:
-        return 'ETH'
+        return 'ETH';
       case bscConfig.rpcUrl:
-        return 'BNB'
+        return 'BNB';
       default:
-        return 'No coin'
+        return 'No coin';
     }
-  }, [web3?.bzz.currentProvider])
+  }, [web3?.bzz.currentProvider]);
 
   const [receiverAddress, setReceiverAddress] = useState('');
   const [amount, setAmount] = useState('');
@@ -35,13 +37,13 @@ const SendCrypto = () => {
         from: accounts[0],
         to: receiverAddress,
         value: ethers.utils.parseEther(amount)._hex,
-      }]
+      }];
 
       const txn = await window.ethereum
         .request({
           method: 'eth_sendTransaction',
-          params
-        })
+          params,
+        });
 
       setResponseMessage(`Transaction successful. Transaction hash: ${txn.hash}`);
     } catch (error) {
@@ -53,44 +55,44 @@ const SendCrypto = () => {
 
   return (
     <Box>
-      <Box textAlign='center' w='100%' fontSize='18px' fontWeight='700'>Send crypto</Box>
+      <Box textAlign="center" w="100%" fontSize="18px" fontWeight="700">Send crypto</Box>
 
       <form onSubmit={handleFormSubmit}>
-        <FormControl mb='5px'>
-          <FormLabel fontWeight='700'>Coin:</FormLabel>
+        <FormControl mb="5px">
+          <FormLabel fontWeight="700">Coin:</FormLabel>
           <Input
             isDisabled
             isReadOnly
-            size='sm'
+            size="sm"
             value={defaultCurrency || 'Your coin'}
           />
         </FormControl>
 
-        <FormControl mb='5px'>
-          <FormLabel fontWeight='700'>Receiver Wallet Address:</FormLabel>
+        <FormControl mb="5px">
+          <FormLabel fontWeight="700">Receiver Wallet Address:</FormLabel>
           <Input
-            size='sm'
+            size="sm"
             value={receiverAddress}
             onChange={(e) => setReceiverAddress(e.target.value)}
           />
         </FormControl>
 
-        <FormControl mb='5px'>
-          <FormLabel fontWeight='700'>Amount:</FormLabel>
+        <FormControl mb="5px">
+          <FormLabel fontWeight="700">Amount:</FormLabel>
           <Input
-            size='sm'
+            size="sm"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
         </FormControl>
 
-        <Button type="submit" mt='10px'>Send Cryptocurrencies</Button>
+        <Button type="submit" mt="10px">Send Cryptocurrencies</Button>
       </form>
 
       {responseMessage && <Text>{responseMessage}</Text>}
     </Box>
   );
-};
+}
 
 export default SendCrypto;

@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
-import MainPage from "./pages/main";
-import Web3Provider from "./context/web3.context";
+import MainPage from './pages/main';
+import Web3Provider from './context/web3.context';
 
 function App() {
   return (
     <Web3Provider>
-      <MainPage/>
+      <MainPage />
     </Web3Provider>
   );
 }

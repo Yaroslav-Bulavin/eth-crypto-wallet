@@ -1,7 +1,9 @@
-import React, {createContext, useState, useEffect, useCallback, useMemo} from 'react';
+import React, {
+  createContext, useState, useEffect, useCallback, useMemo,
+} from 'react';
 import Web3 from 'web3';
-import {bscConfig, ethereumConfig} from "../config";
-import {ethers} from "ethers";
+import { ethers } from 'ethers';
+import { bscConfig, ethereumConfig } from '../config';
 
 type Web3ContextType = {
   web3: Web3 | null;
@@ -10,32 +12,23 @@ type Web3ContextType = {
   networkType: string | null;
   handleSetNetworkType(network: string): void;
   accountBalance: string | null;
-}
+};
 
-// Create the Web3 context
 export const Web3Context = createContext<Web3ContextType>({
   web3: null,
   accounts: [],
   network: null,
   networkType: null,
   accountBalance: null,
-  handleSetNetworkType: (network: string) => undefined
+  handleSetNetworkType: () => undefined,
 });
 
-const Web3Provider: React.FC<{children?: React.ReactNode}> = ({ children }) => {
+const Web3Provider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [web3, setWeb3] = useState<Web3ContextType['web3']>(null);
   const [accounts, setAccounts] = useState<Web3ContextType['accounts']>([]);
   const [network, setNetwork] = useState<Web3ContextType['network']>(null);
   const [networkType, setNetworkType] = useState<Web3ContextType['networkType']>(null);
   const [accountBalance, setAccountBalance] = useState<Web3ContextType['networkType']>(null);
-
-  useEffect(() => {
-    console.log('web3', web3)
-    console.log('accounts', accounts)
-    console.log('network', network)
-    console.log('balance', accountBalance)
-    console.log('networkType', networkType)
-  }, [web3, accounts, network, accountBalance, networkType])
 
   useEffect(() => {
     const init = async (networkURL: string) => {
@@ -55,6 +48,7 @@ const Web3Provider: React.FC<{children?: React.ReactNode}> = ({ children }) => {
               instance.setProvider(bscConfig.rpcUrl);
               break;
             default:
+              // eslint-disable-next-line no-console
               console.error('Unsupported network.');
               return;
           }
@@ -65,11 +59,14 @@ const Web3Provider: React.FC<{children?: React.ReactNode}> = ({ children }) => {
           setWeb3(instance);
           setAccounts(accounts);
 
+          // eslint-disable-next-line no-console
           console.log('Connected to MetaMask. Current account:', accounts[0]);
         } else {
+          // eslint-disable-next-line no-console
           console.error('MetaMask extension not found.');
         }
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error('Failed to connect to MetaMask:', e);
       }
     };
@@ -77,19 +74,17 @@ const Web3Provider: React.FC<{children?: React.ReactNode}> = ({ children }) => {
     if (networkType) {
       init(networkType);
     }
-  }, [networkType])
+  }, [networkType]);
 
   const handleSetNetworkType = useCallback((network: string) => {
-    setNetworkType(network)
-  }, [])
+    setNetworkType(network);
+  }, []);
 
   useEffect(() => {
     const getBalance = async () => {
-      const provider = new ethers.providers.JsonRpcProvider(web3?.bzz.currentProvider)
+      const provider = new ethers.providers.JsonRpcProvider(web3?.bzz.currentProvider);
       const balance = await provider.getBalance(accounts[0]);
       const balanceInEther = ethers.utils.formatEther(balance);
-
-      console.log(`Account balance: ${balanceInEther} ETH`);
 
       setAccountBalance(balanceInEther);
     };
@@ -97,17 +92,19 @@ const Web3Provider: React.FC<{children?: React.ReactNode}> = ({ children }) => {
     if (accounts.length) {
       getBalance();
     }
-  }, [accounts, networkType, web3?.bzz.currentProvider])
+  }, [accounts, networkType, web3?.bzz.currentProvider]);
+
+  const contextValue = useMemo(() => ({
+    web3,
+    accounts,
+    network,
+    handleSetNetworkType,
+    networkType,
+    accountBalance,
+  }), [web3, accounts, network, handleSetNetworkType, networkType, accountBalance]);
 
   return (
-    <Web3Context.Provider value={{
-      web3,
-      accounts,
-      network,
-      handleSetNetworkType,
-      networkType,
-      accountBalance,
-    }}>
+    <Web3Context.Provider value={contextValue}>
       {children}
     </Web3Context.Provider>
   );
