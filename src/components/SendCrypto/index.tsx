@@ -1,8 +1,10 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import { ethers } from 'ethers';
 import {Box, Button, FormControl, FormLabel, Input, Select, Text} from "@chakra-ui/react";
+import {Web3Context} from "../../context/web3.context";
 
 const SendCrypto = () => {
+  const {accounts} = useContext(Web3Context)
   const [currency, setCurrency] = useState('ETH');
   const [receiverAddress, setReceiverAddress] = useState('');
   const [amount, setAmount] = useState('');
@@ -12,21 +14,23 @@ const SendCrypto = () => {
     event.preventDefault();
 
     try {
-      // Validate form inputs
       if (!receiverAddress || !amount || parseFloat(amount) <= 0) {
         setResponseMessage('Please provide a valid receiver address and amount.');
         return;
       }
 
-      // Send cryptocurrencies
-      const provider = ethers.getDefaultProvider('mainnet'); // Use the desired Ethereum network
-      const wallet = ethers.Wallet.createRandom().connect(provider); // Replace with your own wallet
-      const transaction = await wallet.sendTransaction({
+      const params = [{
+        from: accounts[0],
         to: receiverAddress,
-        value: ethers.utils.parseEther(amount),
-      });
+        value: ethers.utils.parseEther(amount)._hex,
+      }]
 
-      setResponseMessage(`Transaction successful. Transaction hash: ${transaction.hash}`);
+      const txn = await window.ethereum
+        .request({
+          method: 'eth_sendTransaction',
+          params
+        })
+      setResponseMessage(`Transaction successful. Transaction hash: ${txn.hash}`);
     } catch (error) {
       if (error instanceof Error) {
         setResponseMessage(`Error sending cryptocurrencies: ${error.message}`);
