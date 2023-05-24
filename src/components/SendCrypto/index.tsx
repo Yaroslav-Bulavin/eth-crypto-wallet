@@ -1,11 +1,23 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import { ethers } from 'ethers';
-import {Box, Button, FormControl, FormLabel, Input, Select, Text} from "@chakra-ui/react";
+import {Box, Button, FormControl, FormLabel, Input, Text} from "@chakra-ui/react";
 import {Web3Context} from "../../context/web3.context";
+import {bscConfig, ethereumConfig} from "../../config";
 
 const SendCrypto = () => {
-  const {accounts} = useContext(Web3Context)
-  const [currency, setCurrency] = useState('ETH');
+  const {accounts, web3} = useContext(Web3Context)
+
+  const defaultCurrency = useMemo(() => {
+    switch (web3?.bzz.currentProvider) {
+      case ethereumConfig.rpcUrl:
+        return 'ETH'
+      case bscConfig.rpcUrl:
+        return 'BNB'
+      default:
+        return 'No coin'
+    }
+  }, [web3?.bzz.currentProvider])
+
   const [receiverAddress, setReceiverAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
@@ -30,6 +42,7 @@ const SendCrypto = () => {
           method: 'eth_sendTransaction',
           params
         })
+
       setResponseMessage(`Transaction successful. Transaction hash: ${txn.hash}`);
     } catch (error) {
       if (error instanceof Error) {
@@ -44,11 +57,13 @@ const SendCrypto = () => {
 
       <form onSubmit={handleFormSubmit}>
         <FormControl mb='5px'>
-          <FormLabel fontWeight='700'>Currency:</FormLabel>
-          <Select placeholder='Select currency' value={currency} onChange={(e) => setCurrency(e.target.value)} size='sm'>
-            <option value='ETH'>ETH</option>
-            <option value='CHR'>CHR</option>
-          </Select>
+          <FormLabel fontWeight='700'>Coin:</FormLabel>
+          <Input
+            isDisabled
+            isReadOnly
+            size='sm'
+            value={defaultCurrency || 'Your coin'}
+          />
         </FormControl>
 
         <FormControl mb='5px'>
