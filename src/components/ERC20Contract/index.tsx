@@ -3,6 +3,7 @@ import {Web3Context} from "../../context/web3.context";
 import {CHRABI} from "../../utils/web3";
 import Web3 from "web3";
 import {ethers} from "ethers";
+import {Box, Flex, Text} from "@chakra-ui/react";
 
 const ERC20Contract: React.FC<{tokenAddress?: string}> = ({ tokenAddress = '0x8A2279d4A90B6fe1C4B30fa660cC9f926797bAA2' }) => {
   const { web3 } = useContext(Web3Context);
@@ -40,12 +41,21 @@ const ERC20Contract: React.FC<{tokenAddress?: string}> = ({ tokenAddress = '0x8A
   }, [web3, tokenAddress]);
 
   return (
-    <div>
-      <h1>ERC20 Token Details</h1>
-      <p>Name: {tokenName}</p>
-      <p>Symbol: {tokenSymbol}</p>
-      <p>Decimals: {tokenDecimals}</p>
-    </div>
+    <Box>
+      <Box textAlign='center' w='100%' fontSize='18px' fontWeight='700'>ERC20 Token Details</Box>
+      <Flex>
+        <Text as='b'>Name:</Text>
+        <Text>{tokenName || '-----'}</Text>
+      </Flex>
+      <Flex>
+        <Text as='b'>Symbol:</Text>
+        <Text>{tokenSymbol || '-----'}</Text>
+      </Flex>
+      <Flex>
+        <Text as='b'>Decimals:</Text>
+        <Text>{tokenDecimals || '-----'}</Text>
+      </Flex>
+    </Box>
   );
 };
 
