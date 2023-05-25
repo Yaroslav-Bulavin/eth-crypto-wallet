@@ -1,8 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
+import {
+  Box, Flex, Text,
+} from '@chakra-ui/react';
 import { ethers } from 'ethers';
-import { Box, Flex, Text } from '@chakra-ui/react';
-import { CHRABI } from '../../utils/web3';
 import { Web3Context } from '../../context/web3.context';
+import LazyText from '../../elements/LazyText';
+import { CHRABI } from '../../utils/web3';
 
 const ERC20Contract: React.FC<{ tokenAddress?: string }> = ({ tokenAddress = '0x8A2279d4A90B6fe1C4B30fa660cC9f926797bAA2' }) => {
   const { web3 } = useContext(Web3Context);
@@ -37,17 +40,17 @@ const ERC20Contract: React.FC<{ tokenAddress?: string }> = ({ tokenAddress = '0x
   return (
     <Box>
       <Box textAlign="center" w="100%" fontSize="18px" fontWeight="700">ERC20 Token Details</Box>
-      <Flex>
+      <Flex align="center">
         <Text as="b">Name:</Text>
-        <Text>{tokenName || '-----'}</Text>
+        <LazyText text={tokenName} />
       </Flex>
-      <Flex>
+      <Flex align="center">
         <Text as="b">Symbol:</Text>
-        <Text>{tokenSymbol || '-----'}</Text>
+        <LazyText text={tokenSymbol} />
       </Flex>
-      <Flex>
+      <Flex align="center">
         <Text as="b">Decimals:</Text>
-        <Text>{tokenDecimals || '-----'}</Text>
+        <LazyText text={tokenDecimals} />
       </Flex>
     </Box>
   );

@@ -1,8 +1,14 @@
 export const ethereumConfig = {
-  network: 'mainnet',
+  network: 'Ethereum Mainnet',
   rpcUrl: 'https://mainnet.infura.io/v3/c2457f302ac74d2086a2eecbdb6547dd',
+  chainId: 1,
+  chainName: 'Ethereum Mainnet',
+  networkType: 'eth',
 };
 export const bscConfig = {
-  network: 'testnet',
-  rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+  network: 'BNB Smart Chain',
+  rpcUrl: 'https://bsc-dataseed.binance.org/',
+  chainId: 56,
+  chainName: 'BNB Smart Chain',
+  networkType: 'bsc',
 };

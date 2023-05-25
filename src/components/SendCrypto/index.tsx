@@ -45,7 +45,7 @@ function SendCrypto() {
           params,
         });
 
-      setResponseMessage(`Transaction successful. Transaction hash: ${txn.hash}`);
+      setResponseMessage(`Transaction successful. Transaction hash: ${txn}`);
     } catch (error) {
       if (error instanceof Error) {
         setResponseMessage(`Error sending cryptocurrencies: ${error.message}`);

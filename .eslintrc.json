@@ -23,6 +23,7 @@
         "@typescript-eslint/no-shadow": "off",
         "react/require-default-props": "off",
         "react/function-component-definition": "off",
-        "no-underscore-dangle": "off"
+        "no-underscore-dangle": "off",
+        "react/jsx-no-useless-fragment": "off"
     }
 }

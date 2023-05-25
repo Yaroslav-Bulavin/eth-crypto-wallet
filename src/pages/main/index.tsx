@@ -6,23 +6,25 @@ import {
 import { Web3Context } from '../../context/web3.context';
 import ERC20Contract from '../../components/ERC20Contract';
 import SendCrypto from '../../components/SendCrypto';
+import { bscConfig, ethereumConfig } from '../../config';
+import LazyText from '../../elements/LazyText';
 
 function MainPage() {
   const {
     handleSetNetworkType, accounts, accountBalance, networkType,
   } = useContext(Web3Context);
-  const connectToMetaMask = async (network: any) => {
+  const connectToMetaMask = async (network: typeof ethereumConfig) => {
     handleSetNetworkType(network);
   };
 
   const networkTypeToDisplay = useMemo(() => {
-    switch (networkType) {
+    switch (networkType?.networkType) {
       case 'eth':
         return 'Connected to ETH Mainnet';
       case 'bsc':
         return 'Connected to BSC Testnet';
       default:
-        return 'the network has not been selected';
+        return null;
     }
   }, [networkType]);
 
@@ -31,23 +33,23 @@ function MainPage() {
       <Card>
         <CardBody>
           <Flex justifyContent="center">
-            <Button onClick={() => connectToMetaMask('eth')} mr="10px">Connect to ETH Mainnet</Button>
-            <Button onClick={() => connectToMetaMask('bsc')}>Connect to BSC Testnet</Button>
+            <Button onClick={() => connectToMetaMask(ethereumConfig)} mr="10px">Connect to ETH Mainnet</Button>
+            <Button onClick={() => connectToMetaMask(bscConfig)}>Connect to BSC Testnet</Button>
           </Flex>
 
           <Box>
             <Box textAlign="center" w="100%" fontSize="18px" fontWeight="700">Wallet info</Box>
-            <Flex>
+            <Flex align="center">
               <Text as="b">Network type:</Text>
-              <Text>{networkTypeToDisplay || '-----'}</Text>
+              <LazyText text={networkTypeToDisplay} />
             </Flex>
-            <Flex>
+            <Flex align="center">
               <Text as="b">Wallet address:</Text>
-              <Text>{accounts[0] || '-----'}</Text>
+              <LazyText text={accounts[0]} />
             </Flex>
-            <Flex>
+            <Flex align="center">
               <Text as="b">Actual balance:</Text>
-              <Text>{accountBalance || '-----'}</Text>
+              <LazyText text={accountBalance} />
             </Flex>
           </Box>
 
