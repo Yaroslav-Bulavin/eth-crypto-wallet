@@ -39,7 +39,7 @@ const ERC20Contract: React.FC<{ tokenAddress?: string }> = ({ tokenAddress = '0x
 
   return (
     <Box>
-      <Box textAlign="center" w="100%" fontSize="18px" fontWeight="700">ERC20 Token Details</Box>
+      <Box textAlign="center" w="100%" fontSize="18px" fontWeight="700">CHR Token Details</Box>
       <Flex align="center">
         <Text as="b">Name:</Text>
         <LazyText text={tokenName} />

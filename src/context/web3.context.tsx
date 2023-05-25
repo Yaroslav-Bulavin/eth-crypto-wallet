@@ -1,17 +1,20 @@
 import React, {
-  createContext, useState, useEffect, useCallback, useMemo,
+  createContext, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import Web3 from 'web3';
 import { ethers } from 'ethers';
-import { bscConfig, ethereumConfig } from '../config';
+import { networkConfig, TNetworkConfig } from '../config';
+import { CoinEnum } from '../enum/coin.enum';
+import { bnbConfig, ethConfig } from '../utils/web3';
 
 type Web3ContextType = {
   web3: Web3 | null;
   accounts: Array<string>;
   network: number | null;
-  networkType: typeof ethereumConfig | null;
-  handleSetNetworkType(network: typeof ethereumConfig): void;
+  networkType: TNetworkConfig | null;
+  handleSetNetworkType(network: TNetworkConfig): void;
   accountBalance: string | null;
+  currentCurrencySymbol: CoinEnum | string | null
 };
 
 export const Web3Context = createContext<Web3ContextType>({
@@ -20,6 +23,7 @@ export const Web3Context = createContext<Web3ContextType>({
   network: null,
   networkType: null,
   accountBalance: null,
+  currentCurrencySymbol: null,
   handleSetNetworkType: () => undefined,
 });
 
@@ -31,7 +35,7 @@ const Web3Provider: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
   const [accountBalance, setAccountBalance] = useState<Web3ContextType['accountBalance']>(null);
 
   const changeNetwork = async (chainId: number) => {
-    const neededNetwork = chainId === ethereumConfig.chainId ? ethereumConfig : bscConfig;
+    const neededNetwork = networkConfig.find((x) => x.chainId === chainId);
     try {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
@@ -44,9 +48,9 @@ const Web3Provider: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
           method: 'wallet_addEthereumChain',
           params: [
             {
-              chainName: neededNetwork.chainName,
+              chainName: neededNetwork?.chainName,
               chainId: web3?.utils.toHex(chainId),
-              rpcUrls: [neededNetwork.rpcUrl],
+              rpcUrls: [neededNetwork?.rpcUrl],
             },
           ],
         });
@@ -55,23 +59,21 @@ const Web3Provider: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
   };
 
   useEffect(() => {
-    const init = async (networkConfig: Web3ContextType['networkType']) => {
+    const init = async () => {
       try {
         if (typeof window.ethereum !== 'undefined') {
-          // Request access to the user's MetaMask accounts
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-          // Create a new instance of Web3 using MetaMask provider
           const instance = new Web3(window.ethereum);
 
-          await changeNetwork(networkConfig?.chainId as number);
+          await changeNetwork(networkType?.chainId as number);
 
-          switch (networkConfig?.networkType) {
-            case 'eth':
-              instance.setProvider(ethereumConfig.rpcUrl);
+          switch (networkType?.networkType) {
+            case CoinEnum.ETH:
+              instance.setProvider(ethConfig.rpcUrl);
               break;
-            case 'bsc':
-              instance.setProvider(bscConfig.rpcUrl);
+            case CoinEnum.BNB:
+              instance.setProvider(bnbConfig.rpcUrl);
               break;
             default:
               // eslint-disable-next-line no-console
@@ -98,11 +100,11 @@ const Web3Provider: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
     };
 
     if (networkType) {
-      init(networkType);
+      init();
     }
   }, [networkType]);
 
-  const handleSetNetworkType = useCallback((network: typeof ethereumConfig) => {
+  const handleSetNetworkType = useCallback((network: TNetworkConfig) => {
     setNetworkType(network);
   }, []);
 
@@ -120,6 +122,17 @@ const Web3Provider: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
     }
   }, [accounts, web3?.bzz.currentProvider]);
 
+  const currentCurrencySymbol = useMemo(() => {
+    switch (web3?.bzz.currentProvider) {
+      case ethConfig.rpcUrl:
+        return CoinEnum.ETH;
+      case bnbConfig.rpcUrl:
+        return CoinEnum.BNB;
+      default:
+        return '';
+    }
+  }, [web3?.bzz.currentProvider]);
+
   const contextValue = useMemo(() => ({
     web3,
     accounts,
@@ -127,6 +140,7 @@ const Web3Provider: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
     handleSetNetworkType,
     networkType,
     accountBalance,
+    currentCurrencySymbol,
   }), [
     web3,
     accounts,
@@ -134,6 +148,7 @@ const Web3Provider: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
     handleSetNetworkType,
     networkType,
     accountBalance,
+    currentCurrencySymbol,
   ]);
 
   return (

@@ -1,3 +1,10 @@
+import { networkConfig, TNetworkConfig } from '../config';
+import { CoinEnum } from '../enum/coin.enum';
+
+// eslint-disable-next-line max-len
+export const ethConfig = networkConfig.find((x) => x.networkType === CoinEnum.ETH) as TNetworkConfig;
+// eslint-disable-next-line max-len
+export const bnbConfig = networkConfig.find((x) => x.networkType === CoinEnum.BNB) as TNetworkConfig;
 export const CHRABI = [{
   constant: true, inputs: [], name: 'name', outputs: [{ name: '', type: 'string' }], payable: false, stateMutability: 'view', type: 'function',
 }, {

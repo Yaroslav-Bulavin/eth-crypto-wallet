@@ -1,35 +1,28 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { ethers } from 'ethers';
 import {
-  Box, Button, FormControl, FormLabel, Input, Text,
+  Box, Button, FormControl, FormLabel, Input, useToast,
 } from '@chakra-ui/react';
 import { Web3Context } from '../../context/web3.context';
-import { bscConfig, ethereumConfig } from '../../config';
 
 function SendCrypto() {
-  const { accounts, web3 } = useContext(Web3Context);
-
-  const defaultCurrency = useMemo(() => {
-    switch (web3?.bzz.currentProvider) {
-      case ethereumConfig.rpcUrl:
-        return 'ETH';
-      case bscConfig.rpcUrl:
-        return 'BNB';
-      default:
-        return 'No coin';
-    }
-  }, [web3?.bzz.currentProvider]);
+  const toast = useToast();
+  const { accounts, currentCurrencySymbol } = useContext(Web3Context);
 
   const [receiverAddress, setReceiverAddress] = useState('');
   const [amount, setAmount] = useState('');
-  const [responseMessage, setResponseMessage] = useState('');
 
   const handleFormSubmit = async (event: any) => {
     event.preventDefault();
 
     try {
       if (!receiverAddress || !amount || parseFloat(amount) <= 0) {
-        setResponseMessage('Please provide a valid receiver address and amount.');
+        toast({
+          title: 'Please provide a valid receiver address and amount.',
+          status: 'error',
+          duration: 10000,
+          isClosable: true,
+        });
         return;
       }
 
@@ -45,10 +38,22 @@ function SendCrypto() {
           params,
         });
 
-      setResponseMessage(`Transaction successful. Transaction hash: ${txn}`);
+      toast({
+        title: 'Transaction successful',
+        description: `Transaction hash: ${txn}`,
+        status: 'success',
+        duration: 10000,
+        isClosable: true,
+      });
     } catch (error) {
       if (error instanceof Error) {
-        setResponseMessage(`Error sending cryptocurrencies: ${error.message}`);
+        toast({
+          title: 'Error',
+          description: `Error sending cryptocurrencies: ${error.message}`,
+          status: 'error',
+          duration: 10000,
+          isClosable: true,
+        });
       }
     }
   };
@@ -64,7 +69,7 @@ function SendCrypto() {
             isDisabled
             isReadOnly
             size="sm"
-            value={defaultCurrency || 'Your coin'}
+            value={currentCurrencySymbol || 'Your coin'}
           />
         </FormControl>
 
@@ -89,8 +94,6 @@ function SendCrypto() {
 
         <Button type="submit" mt="10px">Send Cryptocurrencies</Button>
       </form>
-
-      {responseMessage && <Text>{responseMessage}</Text>}
     </Box>
   );
 }
