@@ -1,7 +1,10 @@
-# Getting Started with Create React App
+# Dapp test Yaroslav Bulavin
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Node `v16.5.1`
+### To test, you just need a chrome metamask extension with your account
 
+### To connect to ETH Mainnet - click on ETH Mainnet button.
+### To connect to BNB Mainnet - click on BNB Mainnet button.
 ## Available Scripts
 
 In the project directory, you can run:
