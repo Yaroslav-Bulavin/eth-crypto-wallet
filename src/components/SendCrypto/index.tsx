@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { FormEvent, useContext, useState } from 'react';
 import { ethers } from 'ethers';
 import {
   Box, Button, FormControl, FormLabel, Input, useToast,
@@ -12,9 +12,8 @@ function SendCrypto() {
   const [receiverAddress, setReceiverAddress] = useState('');
   const [amount, setAmount] = useState('');
 
-  const handleFormSubmit = async (event: any) => {
+  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     try {
       if (!receiverAddress || !amount || parseFloat(amount) <= 0) {
         toast({
