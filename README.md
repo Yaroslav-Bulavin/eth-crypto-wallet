@@ -5,6 +5,9 @@
 
 ### To connect to ETH Mainnet - click on ETH Mainnet button.
 ### To connect to BNB Mainnet - click on BNB Mainnet button.
+
+### Used technologies: `React`, `Typescript`, `ESLint`, `web3`, `ethers`, `ChakraUI`
+
 ## Available Scripts
 
 In the project directory, you can run:
